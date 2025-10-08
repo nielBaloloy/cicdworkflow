@@ -1,20 +1,28 @@
 name: CI - Main to Dev
 
 on:
+  # Runs when something is pushed to dev or main (so merges trigger it)
   push:
     branches:
       - dev
+      - main
+
+  # Runs when a PR to dev is opened, updated, or merged
   pull_request:
     branches:
       - dev
     types:
-      - closed
       - opened
       - synchronize
+      - reopened
+      - closed
 
 jobs:
   test:
-    if: github.ref == 'refs/heads/dev'
+    # Only run tests when:
+    # - the current ref is dev (push to dev)
+    # - or a PR to dev was merged
+    if: github.ref == 'refs/heads/dev' || (github.event.pull_request.base.ref == 'dev' && github.event.pull_request.merged == true)
     runs-on: ubuntu-latest
 
     steps:
@@ -31,3 +39,10 @@ jobs:
 
       - name: Run tests
         run: npm test
+
+      - name: Show branch info (for debugging)
+        run: |
+          echo "Event: ${{ github.event_name }}"
+          echo "Branch ref: ${{ github.ref }}"
+          echo "Base ref (if PR): ${{ github.event.pull_request.base.ref }}"
+          echo "Merged: ${{ github.event.pull_request.merged }}"
