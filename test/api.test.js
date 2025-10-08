@@ -1,10 +1,10 @@
-const request = require('supertest');
-const app = require('../src/index'); // import app, not server
+const request = require("supertest");
+const app = require("../src/index"); // import app, not server
 
-describe('GET /', () => {
-  it('should return Hello World!', async () => {
-    const response = await request(app).get('/');
+describe("GET /", () => {
+  it("should return Hello World!", async () => {
+    const response = await request(app).get("/");
     expect(response.statusCode).toBe(200);
-    expect(response.text).toBe('Hello World!');
+    expect(response.text).toBe("Hello World!");
   });
 });

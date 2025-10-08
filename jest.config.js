@@ -1,7 +1,7 @@
 module.exports = {
-  testEnvironment: 'node',
-  testMatch :['**/__tests__/**/*.js?(x)', '**/?(*.)+(spec|test).js?(x)'],
+  testEnvironment: "node",
+  testMatch: ["**/__tests__/**/*.js?(x)", "**/?(*.)+(spec|test).js?(x)"],
   transform: {
-    '^.+\\.js$': 'babel-jest',
+    "^.+\\.js$": "babel-jest",
   },
 };
