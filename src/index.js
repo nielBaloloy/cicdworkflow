@@ -6,5 +6,7 @@ app.get("/", (req, res) => {
 });
 
 console.log("App is running...");
-  console.log("potential issues here");
+  
+
+
 module.exports = app;
