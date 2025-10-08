@@ -1,5 +1,5 @@
 const request = require('supertest');
-const app = require('../src/index'); // adjust path if needed
+const app = require('../src/index'); // import app, not server
 
 describe('GET /', () => {
   it('should return Hello World!', async () => {
