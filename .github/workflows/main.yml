@@ -1,38 +1,23 @@
-name: CI - Main to Dev
+name: Main to Dev - Test, Build & Auto Sync
 
 on:
-  # Runs when something is pushed to dev or main (so merges trigger it)
   push:
     branches:
-      - dev
       - main
 
-  # Runs when a PR to dev is opened, updated, or merged
-  pull_request:
-    branches:
-      - dev
-    types:
-      - opened
-      - synchronize
-      - reopened
-      - closed
-
 jobs:
-  test:
-    # Only run tests when:
-    # - the current ref is dev (push to dev)
-    # - or a PR to dev was merged
-    if: github.ref == 'refs/heads/dev' || (github.event.pull_request.base.ref == 'dev' && github.event.pull_request.merged == true)
+  test_and_build:
+    name: Test & Build
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repository
+      - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Setup Node.js
+      - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 18
 
       - name: Install dependencies
         run: npm ci
@@ -40,9 +25,31 @@ jobs:
       - name: Run tests
         run: npm test
 
-      - name: Show branch info (for debugging)
+      - name: Build project
+        run: npm run build
+
+  auto_sync:
+    name: Auto Sync main → dev
+    needs: test_and_build
+    runs-on: ubuntu-latest
+    if: success()
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Git
         run: |
-          echo "Event: ${{ github.event_name }}"
-          echo "Branch ref: ${{ github.ref }}"
-          echo "Base ref (if PR): ${{ github.event.pull_request.base.ref }}"
-          echo "Merged: ${{ github.event.pull_request.merged }}"
+          git config user.name "GitHub Actions"
+          git config user.email "actions@github.com"
+
+      - name: Fetch all branches
+        run: git fetch origin dev main
+
+      - name: Merge main → dev
+        run: |
+          git checkout dev
+          git merge origin/main --no-edit || exit 0
+          git push origin dev
