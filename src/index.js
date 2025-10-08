@@ -6,7 +6,6 @@ app.get("/", (req, res) => {
 });
 
 console.log("App is running...");
-      console.log("App is running...");
+console.log("App is running...");
 
-      
 module.exports = app;
